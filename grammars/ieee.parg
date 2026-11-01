@@ -193,19 +193,56 @@ grammar PubidIeee version "0.1.0" edition 2 {
   # - the canonical forced-comma render (IEEE publisher, dated draft).
 
   draft_date = {
-    (((("," [space]) / space) (month_name) as draft_date_month [(space / comma)] (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year)) / ((space (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year)) / ((comma (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year)) / ((("," / space) (month_numeric) as draft_date_month (space / dash) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year)) / (((([space] comma [space]) / space) (month_name) as draft_date_month (((space ((1*%x30-39)) as draft_date_day) (((("," / space / dash)) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year))) / ([((space ((1*%x30-39)) as draft_date_day)) comma] (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year) / ((comma [space] (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year)) / ((space (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year))))) / (((([space] comma [space]) / space) (month_name) as draft_date_month [space] ((("0" %x30-39)) / (("1" %x30-32))) as draft_date_year)) / ((([space] dash [space]) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as draft_date_dash_year [dash (month_numeric) as draft_date_dash_month]))
+      (((("," [space]) / space) (month_name) as draft_date_month [(space / comma)]
+          (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year))
+      / ((space (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year))
+      / ((comma (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year))
+      / ((("," / space) (month_numeric) as draft_date_month (space / dash)
+          (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year))
+      / (((([space] comma [space]) / space) (month_name) as draft_date_month
+          (((space ((1*%x30-39)) as draft_date_day)
+              (((("," / space / dash))
+                  (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year)))
+            / ([((space ((1*%x30-39)) as draft_date_day)) comma]
+              (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year)
+            / ((comma [space] (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year))
+            / ((space (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as draft_date_year)))))
+      / (((([space] comma [space]) / space) (month_name) as draft_date_month [space]
+          ((("0" %x30-39)) / (("1" %x30-32))) as draft_date_year))
+      / ((([space] dash [space]) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as draft_date_dash_year
+          [dash (month_numeric) as draft_date_dash_month]))
   }
   fdraft = {
-    ((((stage_sep ((("FDIS" / "CDV" / "CD" / "WD" / "PWI" / "NP")) as fdraft_stage [(((((("," [space]) / space) (month_name) as fdraft_month [space] (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as fdraft_year))) / (((("," / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as fdraft_year))))] [parenthetical]))) as fdraft))
+      ((((stage_sep
+              ((("FDIS" / "CDV" / "CD" / "WD" / "PWI" / "NP")) as fdraft_stage
+                [(((((("," [space]) / space) (month_name) as fdraft_month [space]
+                          (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as fdraft_year)))
+                    / (((("," / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as fdraft_year))))]
+                [parenthetical]))) as fdraft))
   }
   draft = {
-    ((draft_prefix (1*2draft_version) [((dot 1*%x30-39) as revision)] [((("=" (((("D" ("FDIS" / "CDV" / "PWI" / "DIS" / "WD" / "NP" / "CD"))) / (("FDIS" / "CDV" / "PWI" / "DIS" / "WD" / "NP" / "CD"))) as draft_iso_stage)) [(":" / dash) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as draft_stage_year] [[(dot / dash)] (1*%x30-39 0*1letter) as draft_iso_iteration]))] [draft_date])) as draft
+      ((draft_prefix (1*2draft_version) [((dot 1*%x30-39) as revision)]
+          [((("="
+                  (((("D" ("FDIS" / "CDV" / "PWI" / "DIS" / "WD" / "NP" / "CD")))
+                      / (("FDIS" / "CDV" / "PWI" / "DIS" / "WD" / "NP" / "CD"))) as draft_iso_stage))
+                [(":" / dash) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as draft_stage_year]
+                [[(dot / dash)] (1*%x30-39 0*1letter) as draft_iso_iteration]))]
+          [draft_date])) as draft
   }
   revision_suffix = {
-    ((slash "R" dash (1*(%x30-39 / %x41-5A / %x61-7A)) as revision [([space] dash [space]) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as dash_year [dash (month_numeric) as dash_month]])) / ((slash "D" dash) (slash "R" dash) (1*(%x30-39 / %x41-5A / %x61-7A)) as revision [([space] dash [space]) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as dash_year [dash (month_numeric) as dash_month]]) / (rev_numbered) / (rev_lettered)
+      ((slash "R" dash (1*(%x30-39 / %x41-5A / %x61-7A)) as revision
+          [([space] dash [space]) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as dash_year
+            [dash (month_numeric) as dash_month]]))
+      / ((slash "D" dash) (slash "R" dash) (1*(%x30-39 / %x41-5A / %x61-7A)) as revision
+        [([space] dash [space]) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as dash_year
+          [dash (month_numeric) as dash_month]])
+      / (rev_numbered) / (rev_lettered)
   }
   edition = {
-    ((((comma (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as edition_year " Edition"))) / ((((space / dash)) "Edition " ((1*%x30-39 dot 1*%x30-39)) as edition (((" - ")) / space / dash) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as edition_year [(dash (2%x30-39) as edition_month)])))
+      ((((comma (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as edition_year " Edition")))
+        / ((((space / dash)) "Edition " ((1*%x30-39 dot 1*%x30-39)) as edition (((" - ")) / space / dash)
+            (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as edition_year
+            [(dash (2%x30-39) as edition_month)])))
   }
   part_subpart_year = {
     (((part (1*2subpart) year)) / ((part subpart year)) / ((part year)) / ((part subpart)) / (year) / (part)) as part_subpart_year

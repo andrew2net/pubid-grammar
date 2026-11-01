@@ -509,19 +509,44 @@ grammar PubidIeee version "0.1.0" edition 2 {
       [revision_suffix] [parenthetical]
   }
   joint_development_iso_iec_edition = {
-    (((("ISO/IEC") as joint_publishers) space) as iso_published [ ("P") as project_marker ] (1*%x30-39) as number [((dot (1*%x30-39)) as part) / ((dash as iec_label_dash !(("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) (1*%x30-39) as part))] (":" [space] (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as year) [space] parenthetical)
+      (((("ISO/IEC") as joint_publishers) space) as iso_published [ ("P") as project_marker ]
+        (1*%x30-39) as number
+        [((dot (1*%x30-39)) as part)
+          / ((dash as iec_label_dash !(("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) (1*%x30-39) as part))]
+        (":" [space] (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as year) [space] parenthetical)
   }
   joint_development_embedded_stage = {
-    (((((((("ISO/IEC/IEEE" / "IEEE/ISO/IEC" / "IEEE/IEC/ISO" / "ISO/IEEE" / "IEC/IEEE" / "IEEE/IEC" / "ISO/IEC" / "IEEE"))) as joint_publishers) space [("P") as project_marker] ((1*%x30-39)) as number [((((dot / dash) !(("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) ((1*%x30-39)) as part)))] dot (iso_stage) (!(%x30-39 / letter)) [(((((":" (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year))) / ((((([space] dash [space]) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year [(dash (month_numeric) as month)])))) / (((((("," [space]) / space) (month_name) as month [space] (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year))))))]))))
+      (((((((("ISO/IEC/IEEE" / "IEEE/ISO/IEC" / "IEEE/IEC/ISO" / "ISO/IEEE" / "IEC/IEEE" / "IEEE/IEC"
+                      / "ISO/IEC" / "IEEE"))) as joint_publishers)
+              space [("P") as project_marker] ((1*%x30-39)) as number
+              [((((dot / dash) !(("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) ((1*%x30-39)) as part)))] dot
+              (iso_stage) (!(%x30-39 / letter))
+              [(((((":" (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year)))
+                    / ((((([space] dash [space])
+                            (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year
+                            [(dash (month_numeric) as month)]))))
+                    / (((((("," [space]) / space) (month_name) as month [space]
+                            (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year))))))]))))
   }
   number_first_identifier = {
-    ((number [((((([space] dash [space]) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year))))] space (((((publisher)) ((*copublisher) as copublishers)) as publishers)) space [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] (((0*non_nl)) as title)))
+      ((number [((((([space] dash [space]) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year))))]
+          space (((((publisher)) ((*copublisher) as copublishers)) as publishers)) space
+          [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+                  / (("N" / "n") "o") / "No")) as type
+              [space])]
+          (((0*non_nl)) as title)))
   }
   ieee_p_identifier = {
-    ([(("IEEE") as publisher space)] ((number)) [((part_subpart_year / edition))] [(slash ((1*%x30-39) as draft_version_scalar)) as digit_draft] [fdraft] [trailing_month_year] [corrigendum] [rev_inline] [draft] [revision_suffix] [trailing_month_year] [corrigendum] [parenthetical])
+      ([(("IEEE") as publisher space)] ((number)) [((part_subpart_year / edition))]
+        [(slash ((1*%x30-39) as draft_version_scalar)) as digit_draft] [fdraft] [trailing_month_year]
+        [corrigendum] [rev_inline] [draft] [revision_suffix] [trailing_month_year] [corrigendum]
+        [parenthetical])
   }
   ansi_p_identifier = {
-    (((((("ANSI"))) as publisher) space "P" [space] ((number)) [((part_subpart_year / edition))] [trailing_month_year] [corrigendum] [rev_inline] [draft] [revision_suffix] [trailing_month_year] [((("," [space]) / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as trailing_year)] [corrigendum] [parenthetical]))
+      (((((("ANSI"))) as publisher) space "P" [space] ((number)) [((part_subpart_year / edition))]
+          [trailing_month_year] [corrigendum] [rev_inline] [draft] [revision_suffix] [trailing_month_year]
+          [((("," [space]) / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as trailing_year)]
+          [corrigendum] [parenthetical]))
   }
   ieee_draft_p_identifier = {
     ((([((((("IEEE")) as publisher ((*copublisher) as copublishers)) as publishers) space)] [((draft_status)) as draft_status] "Draft" space ((number)) [((part_subpart_year / edition))] [((((space (month_name) as trailing_month space (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as trailing_year)) / ((space (month_numeric) as trailing_month ((space / dash)) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as trailing_year))))] [rev_inline] [draft] [((((comma [space] (month_name) as trailing_month space (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as trailing_year))))] [revision_suffix] [((((comma [space] (month_name) as trailing_month space (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as trailing_year))))] [corrigendum] [parenthetical])))

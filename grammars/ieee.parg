@@ -76,7 +76,41 @@ grammar PubidIeee version "0.1.0" edition 2 {
   year_digits = (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39))
   month_numeric = (("0" %x31-39)) / (("1" %x30-32))
   month_name = {
-    "Sept." / "Oct." / "Nov." / "Dec." / "Jan." / "Feb." / "Mar." / "Apr." / "Jun." / "Jul." / "Aug." / "September" / "November" / "December" / "February" / "August" / "June" / "January" / "March" / "April" / "October" / "July" / "May" / "Sept" / "Jan" / "Feb" / "Mar" / "Apr" / "Jun" / "Jul" / "Aug" / "Sep" / "Oct" / "Nov" / "Dec"
+    "Sept."
+    / "Oct."
+    / "Nov."
+    / "Dec."
+    / "Jan."
+    / "Feb."
+    / "Mar."
+    / "Apr."
+    / "Jun."
+    / "Jul."
+    / "Aug."
+    / "September"
+    / "November"
+    / "December"
+    / "February"
+    / "August"
+    / "June"
+    / "January"
+    / "March"
+    / "April"
+    / "October"
+    / "July"
+    / "May"
+    / "Sept"
+    / "Jan"
+    / "Feb"
+    / "Mar"
+    / "Apr"
+    / "Jun"
+    / "Jul"
+    / "Aug"
+    / "Sep"
+    / "Oct"
+    / "Nov"
+    / "Dec"
   }
 
   date_with_month_text = ((month_name) as month [space] (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as year)
@@ -103,7 +137,14 @@ grammar PubidIeee version "0.1.0" edition 2 {
   }
   ipcea_copub = ((((slash "IPCEA" space (1*(%x41-5A / %x61-7A / %x30-39 / "." / dash))))) as ipcea_copub)
   s_designation = {
-    ([(publisher space)] [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] (("S" dash 1*%x30-39)) as s_number [ipcea_copub] [parenthetical])
+    (
+      [(publisher space)]
+      [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC"
+         / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])]
+      (("S" dash 1*%x30-39)) as s_number
+      [ipcea_copub]
+      [parenthetical]
+    )
   }
   # A dash group after the number is a PART, not more number (C1: the
   # part binds before the draft status and the year - the dash-continuation

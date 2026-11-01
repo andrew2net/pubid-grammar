@@ -258,16 +258,25 @@ grammar PubidIeee version "0.1.0" edition 2 {
   # A corrigendum year: 4-%x30-39, or the 201x-style pre-publication placeholder.
   yearish = ((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) / ("20" ("1" / "0") ("x" / "X" / %x30-39)))
   corrigendum = {
-    ((("_" / slash / dash / space) ("Corrigendum" / "Cor") [(dash / dot / space)] [space] [1*%x30-39 as cor_number] [ ( (comma !yearish [space] draft as cor_draft)   / (comma (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39) / ("20" ("1" / "0") ("x" / "X" / %x30-39))) as cor_year)   / ((dash / ":" / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39) / ("20" ("1" / "0") ("x" / "X" / %x30-39))) as cor_year) ) ]) as corrigendum)
+      ((("_" / slash / dash / space) ("Corrigendum" / "Cor") [(dash / dot / space)] [space]
+          [1*%x30-39 as cor_number]
+          [((comma !yearish [space] draft as cor_draft)
+              / (comma
+                (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39) / ("20" ("1" / "0") ("x" / "X" / %x30-39))) as cor_year)
+              / ((dash / ":" / space)
+                (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39) / ("20" ("1" / "0") ("x" / "X" / %x30-39))) as cor_year))]) as corrigendum)
   }
   amendment = {
-    (((((("_" / slash / dash / space)) (("Amendment" / "Amd")) [(dash / dot / space)] [space] [1*%x30-39 as amd_number] [((dash / ":" / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as amd_year)]))) as amendment)
+      (((((("_" / slash / dash / space)) (("Amendment" / "Amd")) [(dash / dot / space)] [space]
+              [1*%x30-39 as amd_number]
+              [((dash / ":" / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as amd_year)]))) as amendment)
   }
   interpretation = {
     ((((slash "INT" [((dash / ":" / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)) as int_year)]))) as interpretation)
   }
   reaffirmed = {
-    (((((("Reaffirmed " (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as reaffirmed_year))) / ((([space] ("(R" (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as reaffirmed_year ")")))))) as reaffirmed)
+      (((((("Reaffirmed " (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as reaffirmed_year)))
+            / ((([space] ("(R" (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as reaffirmed_year ")")))))) as reaffirmed)
   }
   redline = ((((space [(dash space)] (("Redline" / "REDLINE" / "redline"))))) as redline)
   book_nickname = ((space "[" (1*non_rbracket) as nickname "]"))
@@ -285,11 +294,20 @@ grammar PubidIeee version "0.1.0" edition 2 {
   relationship_previously_designated = "Previously designated as "
   relationship_includes = "Includes "
   relationship_type = {
-    ((relationship_draft_amendment)) as draft_amendment_to / ((relationship_draft_revision)) as draft_revision_of / ((relationship_previously_designated)) as previously_designated_as / ((relationship_reaffirmation)) as reaffirmation_of / ((relationship_redesignation)) as redesignation_of / ((relationship_supersedes)) as supersedes / ((relationship_includes)) as includes / ((relationship_revision_of)) as revision_of / ((relationship_amendment_to)) as amendment_to / ((relationship_corrigendum_to)) as corrigendum_to / ((relationship_incorporates)) as incorporates / ((relationship_adoption_of)) as adoption_of / ((relationship_supplement_to)) as supplement_to
+      ((relationship_draft_amendment)) as draft_amendment_to
+      / ((relationship_draft_revision)) as draft_revision_of
+      / ((relationship_previously_designated)) as previously_designated_as
+      / ((relationship_reaffirmation)) as reaffirmation_of
+      / ((relationship_redesignation)) as redesignation_of / ((relationship_supersedes)) as supersedes
+      / ((relationship_includes)) as includes / ((relationship_revision_of)) as revision_of
+      / ((relationship_amendment_to)) as amendment_to / ((relationship_corrigendum_to)) as corrigendum_to
+      / ((relationship_incorporates)) as incorporates / ((relationship_adoption_of)) as adoption_of
+      / ((relationship_supplement_to)) as supplement_to
   }
   identifier_string = (1*((!(", and") !(" and") !(", ") !(" as amended by ") !relationship_break !(")")) non_nl))
   identifier_list = {
-    (((1*((!(", and") !(" and") !(", ") !(" as amended by ") !relationship_break !(")")) (%x01-09 / %x0B-10FFFF))) as id) (*(((((", and") / (" and") / (", "))) (1*((!(", and") !(" and") !(", ") !(" as amended by ") !relationship_break !(")")) (%x01-09 / %x0B-10FFFF))) as id))))
+      (((1*((!(", and") !(" and") !(", ") !(" as amended by ") !relationship_break !(")")) (%x01-09 / %x0B-10FFFF))) as id)
+        (*(((((", and") / (" and") / (", "))) (1*((!(", and") !(" and") !(", ") !(" as amended by ") !relationship_break !(")")) (%x01-09 / %x0B-10FFFF))) as id))))
   }
   as_amended_by_clause = {
     (((" as amended by IEEE's ") ((identifier_list)) as amendments)) / (((" as amended by ") ((identifier_list)) as amendments)) / ((" and its approved amendments") as approved_amendments)
@@ -297,12 +315,26 @@ grammar PubidIeee version "0.1.0" edition 2 {
   relationship_separator = (([space] slash [space])) / (([space] ";" [space])) / (([space] dash [space]))
   relationship_break = (((relationship_separator)) [space] ((relationship_type)))
   relationship_clause = {
-    (([space] "(" ((relationship_type)) as relationship_type ((identifier_list)) as related_ids [as_amended_by_clause] ((*(((relationship_separator) ((relationship_type)) as relationship_type ((identifier_list)) as related_ids [as_amended_by_clause]))) as additional_rels) ")"))
+      (([space] "(" ((relationship_type)) as relationship_type ((identifier_list)) as related_ids
+          [as_amended_by_clause]
+          ((*(((relationship_separator) ((relationship_type)) as relationship_type ((identifier_list)) as related_ids [as_amended_by_clause]))) as additional_rels)
+          ")"))
   }
   title_portion = ((":" space (1*non_nl) as title))
   approved_draft_suffix = ((space "- (Approved Draft)")) / ((space "(Approved Draft)"))
   additional_parameters = {
-    (((([space] "(" [space] ((((reaffirmed))) / (("Revision of IEEE Std ") [space] ((1*non_rparen)) as revision_of) / (("Revison of IEEE Std ") [space] ((1*non_rparen)) as revision_of) / (("Revision to IEEE Std ") [space] ((1*non_rparen)) as revision_of) / (("Revison to IEEE Std ") [space] ((1*non_rparen)) as revision_of) / (((("DRAFT" / "Draft" / "draft")) " Amendment to " ((1*non_rparen)) as draft_amendment_to)) / (("Amendment to IEEE Std ") [space] ((1*non_rparen)) as amendment_to) / (("Adoption of ") ((1*non_rparen)) as adoption) / (("Notebooks") [space] ((1*non_comma_rparen)) as notebooks) / (("Standard Newspaper(s)") [space] ((1*non_comma_rparen)) as standard_newspapers) / (((1*non_rparen)) as parenthetical_content)) [")"]))) as parameters)
+      (((([space] "(" [space]
+              ((((reaffirmed))) / (("Revision of IEEE Std ") [space] ((1*non_rparen)) as revision_of)
+                / (("Revison of IEEE Std ") [space] ((1*non_rparen)) as revision_of)
+                / (("Revision to IEEE Std ") [space] ((1*non_rparen)) as revision_of)
+                / (("Revison to IEEE Std ") [space] ((1*non_rparen)) as revision_of)
+                / (((("DRAFT" / "Draft" / "draft")) " Amendment to " ((1*non_rparen)) as draft_amendment_to))
+                / (("Amendment to IEEE Std ") [space] ((1*non_rparen)) as amendment_to)
+                / (("Adoption of ") ((1*non_rparen)) as adoption)
+                / (("Notebooks") [space] ((1*non_comma_rparen)) as notebooks)
+                / (("Standard Newspaper(s)") [space] ((1*non_comma_rparen)) as standard_newspapers)
+                / (((1*non_rparen)) as parenthetical_content))
+              [")"]))) as parameters)
   }
   parenthetical = (relationship_clause / additional_parameters / (([space] ("P&V") as parenthetical_content)))
   iso_stage = {

@@ -1,6 +1,30 @@
 # Port of lib/pubid/iho/parser.rb — IHO identifiers: letter series
 # (S/P/M/B/C), a number with an optional suffix, and appendix, part,
 # annex, supplement and version tails.
+#
+# The trailing component of a series form is a discriminator chosen
+# from:
+#   - the dotted version a.b.c (unchanged — the historical placeholder
+#     and the real S/M/B/C editions, e.g. "B-12 3.0.0");
+#   - a 4-digit year 19xx/20xx ("P-5 2024", "B-7 2023") — the identity
+#     form for the year-identified series (relaton#407: B-7, P-5, P-6
+#     are identified by year, not by a placeholder edition);
+#   - a volume "Vol. N" with an optional issue ("P-1 Vol. 30",
+#     "P-1 Vol. 30 (2)"). The issue is captured as the bare number and
+#     prints in parentheses. The "Issue N" spelling is accepted as an
+#     input alias; the parenthesized form is the canonical print.
+#     DECISION FLAG for the IHO-agreement step: real IHR issue
+#     spellings vary ("No. N" is also seen) — only "(N)" and
+#     "Issue N" are accepted until the spelling is agreed.
+# A two-segment version ("B-12 3.0") is deliberately NOT supported:
+# no IHO series carries one in the corpus, and neither new rule
+# swallows it (a year needs all four digits of 19xx/20xx; a dotted
+# version needs all three segments).
+#
+# The grammar stays edition v1: the v1 tree inlines rule references
+# inside a captured body (the v2 tree materializes them as named
+# nodes), which the builder's string fold over :number/:type expects.
+# The tail rule uses only raw terms, so nothing in it needs v2.
 
 grammar PubidIho version "0.1.0" edition 1 {
   digit = %x30-39
@@ -24,7 +48,20 @@ grammar PubidIho version "0.1.0" edition 1 {
   }
   annex = space "Annex" space upper as annex
   supplement = space "Suppl" space (1*digit) as supplement
-  version = space (1*digit dot 1*digit dot 1*digit) as version
+  tail = {
+    space
+    (
+      (1*digit dot 1*digit dot 1*digit) as version
+      / (("19" / "20") 2*digit) as year
+      / (
+        ("Vol." space (1*digit) as volume)
+        [
+          (space "Issue" space (1*digit) as issue)
+          / (space "(" (1*digit) as issue ")")
+        ]
+      )
+    )
+  }
 
   identifier = {
     [("IHO" space)]
@@ -35,7 +72,7 @@ grammar PubidIho version "0.1.0" edition 1 {
     [part]
     [annex]
     [supplement]
-    [version]
+    [tail]
   }
 
   entry identifier: identifier
@@ -43,6 +80,20 @@ grammar PubidIho version "0.1.0" edition 1 {
   test {
     accept "S-5"
     accept "IHO S-5 Appendix 2"
+    accept "IHO B-12 3.0.0"
+    accept "IHO P-5 2024"
+    accept "P-5 2024"
+    accept "IHO B-7 2023"
+    accept "IHO P-1 Vol. 30"
+    accept "IHO P-1 Vol. 30 (2)"
+    accept "IHO P-1 Vol. 30 Issue 2"
     reject "nonsense"
+    reject "IHO B-12 3.0"
+  }
+
+  bindings identifier {
+    year -> year (string)
+    volume -> volume (string)
+    issue -> issue (string)
   }
 }

@@ -617,28 +617,98 @@ grammar PubidIeee version "0.1.0" edition 2 {
   # alternative: it only accepts what every publisher-led rule above
   # rejected, so plain IEEE drafts keep their existing routes.
   ieee_iso_draft_designation = {
-    ((publisher) space ["Draft" space] [((draft_status)) as draft_status] [("P") as project_marker] (1*%x30-39) as number [ ((part [1*subpart])) as part_subpart_year ] (slash "D" "=" ((("FDIS" [%x30-39]) / ("FCD" [%x30-39]) / ("CDV" [%x30-39]) / ("DIS" [%x30-39]) / ("CD" [%x30-39]) / ("WD" [%x30-39]) / ("PWI" [%x30-39]) / ("NP" [%x30-39])) as iso_stage)) [(("-" (("19" / "20") 2%x30-39) [2%x30-39])) as draft_stage_year] [((dash (month_name) [space] (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39))) as draft_stage_year)])
+      ((publisher) space ["Draft" space] [((draft_status)) as draft_status] [("P") as project_marker]
+        (1*%x30-39) as number [ ((part [1*subpart])) as part_subpart_year ]
+        (slash "D" "="
+          ((("FDIS" [%x30-39]) / ("FCD" [%x30-39]) / ("CDV" [%x30-39]) / ("DIS" [%x30-39])
+              / ("CD" [%x30-39]) / ("WD" [%x30-39]) / ("PWI" [%x30-39]) / ("NP" [%x30-39])) as iso_stage))
+        [(("-" (("19" / "20") 2%x30-39) [2%x30-39])) as draft_stage_year]
+        [((dash (month_name) [space] (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39))) as draft_stage_year)])
   }
   publisherless_ieee = {
-    ([((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] ((number)) [((part_subpart_year / edition))] [corrigendum] [rev_inline] [draft] [revision_suffix] [parenthetical])
+      ([((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+                / (("N" / "n") "o") / "No")) as type
+            [space])]
+        ((number)) [((part_subpart_year / edition))] [corrigendum] [rev_inline] [draft] [revision_suffix]
+        [parenthetical])
   }
   corrigendum_identifier = {
-    ([((((((publisher)) ((*copublisher) as copublishers)) as publishers) space))] [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] ((number)) [(part_subpart_year)]) as base ((slash / dash / space)) "Cor" [(dash / dot / space)] [space] ((1*%x30-39)) as cor_number [ ( (comma !yearish [space] draft as cor_draft)   / (comma (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39) / ("20" ("1" / "0") ("x" / "X" / %x30-39))) as cor_year)   / ((dash / ":" / space) (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39) / ("20" ("1" / "0") ("x" / "X" / %x30-39))) as cor_year) ) ] [draft] [parenthetical]
+      ([((((((publisher)) ((*copublisher) as copublishers)) as publishers) space))]
+        [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+                / (("N" / "n") "o") / "No")) as type
+            [space])]
+        ((number)) [(part_subpart_year)]) as base
+      ((slash / dash / space)) "Cor" [(dash / dot / space)] [space] ((1*%x30-39)) as cor_number
+      [((comma !yearish [space] draft as cor_draft)
+          / (comma
+            (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39) / ("20" ("1" / "0") ("x" / "X" / %x30-39))) as cor_year)
+          / ((dash / ":" / space)
+            (("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39) / ("20" ("1" / "0") ("x" / "X" / %x30-39))) as cor_year))]
+      [draft] [parenthetical]
   }
   interpretation_identifier = {
-    ([((((((publisher)) ((*copublisher) as copublishers)) as publishers) space))] [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] ((number)) [(part_subpart_year)]) as base ((slash / dash / space)) "INT" [((dash / ":" / space) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as int_year)] [parenthetical]
+      ([((((((publisher)) ((*copublisher) as copublishers)) as publishers) space))]
+        [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+                / (("N" / "n") "o") / "No")) as type
+            [space])]
+        ((number)) [(part_subpart_year)]) as base
+      ((slash / dash / space)) "INT"
+      [((dash / ":" / space) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as int_year)]
+      [parenthetical]
   }
   conformance_identifier = {
-    ([((((((publisher)) ((*copublisher) as copublishers)) as publishers) space))] [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] ((number)) [(part_subpart_year)]) as base ((slash / dash / space)) "Conformance" ((1*%x30-39)) as conf_number ([space] dash [space]) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as conf_year [parenthetical]
+      ([((((((publisher)) ((*copublisher) as copublishers)) as publishers) space))]
+        [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+                / (("N" / "n") "o") / "No")) as type
+            [space])]
+        ((number)) [(part_subpart_year)]) as base
+      ((slash / dash / space)) "Conformance" ((1*%x30-39)) as conf_number ([space] dash [space])
+      (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))) as conf_year [parenthetical]
   }
   multi_numbered_identifier = {
-    ((((((([(publisher space)] [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] ((number)) [((part_subpart_year / edition))]))) as primary_identifier) ((((slash "C" 1*%x30-39 dot 1*%x30-39 dot 1*%x30-39 ([space] dash [space]) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))))) as secondary_crossref)))) / ((((((comma space) [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] ((number)) ([space] dash [space]) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))))) as secondary_joint))))
+      ((((((([(publisher space)]
+                    [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+                            / (("N" / "n") "o") / "No")) as type
+                        [space])]
+                    ((number)) [((part_subpart_year / edition))]))) as primary_identifier)
+            ((((slash "C" 1*%x30-39 dot 1*%x30-39 dot 1*%x30-39 ([space] dash [space])
+                    (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))))) as secondary_crossref))))
+        / ((((((comma space)
+                  [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+                          / (("N" / "n") "o") / "No")) as type
+                      [space])]
+                  ((number)) ([space] dash [space]) (((("19" / "20") 2%x30-39 0*2%x61-7A !(1*%x30-39)))))) as secondary_joint))))
   }
   csa_dual_published = {
-    (((((((publisher) space) [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [space])] ((number)) [((part_subpart_year / edition))])) as ieee_portion) slash "CSA" space ((((("C" 2%x30-39 dot %x30-39 space ("No" / "NO") dot space (1*(%x30-39 / ".")) ((dash / ":")) 2%x30-39)) / (("C" (1*(%x30-39 / ".")) dash 2%x30-39)) / (("C" 2%x30-39 dot %x30-39 space ("No" / "NO") dot space (1*(%x30-39 / ".")) ":" 2%x30-39)) / (("C" (1*(%x30-39 / ".")) ":" 2%x30-39))) as csa_portion))))
+      (((((((publisher) space)
+                [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+                        / (("N" / "n") "o") / "No")) as type
+                    [space])]
+                ((number)) [((part_subpart_year / edition))])) as ieee_portion)
+          slash "CSA" space
+          ((((("C" 2%x30-39 dot %x30-39 space ("No" / "NO") dot space (1*(%x30-39 / ".")) ((dash / ":"))
+                    2%x30-39))
+                / (("C" (1*(%x30-39 / ".")) dash 2%x30-39))
+                / (("C" 2%x30-39 dot %x30-39 space ("No" / "NO") dot space (1*(%x30-39 / ".")) ":" 2%x30-39))
+                / (("C" (1*(%x30-39 / ".")) ":" 2%x30-39))) as csa_portion))))
   }
   identifier = {
-    combined_aiee_identifier / aiee_identifier / ire_identifier / nesc_identifier / ieee_astm_si_psi / multi_numbered_identifier / csa_dual_published / s_designation / corrigendum_identifier / interpretation_identifier / conformance_identifier / joint_development_ieee_format / joint_development_iso_format / joint_development_ieee_tail_format / joint_development_iso_iec_edition / joint_development_embedded_stage / iec_ieee_copublished / number_first_identifier / ieee_approved_draft_identifier / ieee_draft_p_identifier / ieee_p_identifier / ansi_p_identifier / (((((((((publisher)) ((*copublisher) as copublishers)) as publishers) space))))) [((draft_status)) as draft_status] [(("Draft Std") as type [space])] [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.") / (("N" / "n") "o") / "No")) as type [((space "No" space))] [space])] ((number)) [((part_subpart_year / edition))] [corrigendum] [amendment] [interpretation] [conformance] [ashrae_copub] [ieee_crossref] [rev_inline] [draft] [revision_suffix] [trailing_month_year] [ashrae_copub] [book_nickname] [corrigendum] [edition] [parenthetical] [book_nickname] [redline] [title_portion] [approved_draft_suffix] / no_prefix_ieee / publisherless_ieee / ieee_iso_draft_designation
+      combined_aiee_identifier / aiee_identifier / ire_identifier / nesc_identifier / ieee_astm_si_psi
+      / multi_numbered_identifier / csa_dual_published / s_designation / corrigendum_identifier
+      / interpretation_identifier / conformance_identifier / joint_development_ieee_format
+      / joint_development_iso_format / joint_development_ieee_tail_format / joint_development_iso_iec_edition
+      / joint_development_embedded_stage / iec_ieee_copublished / number_first_identifier
+      / ieee_approved_draft_identifier / ieee_draft_p_identifier / ieee_p_identifier / ansi_p_identifier
+      / (((((((((publisher)) ((*copublisher) as copublishers)) as publishers) space)))))
+      [((draft_status)) as draft_status] [(("Draft Std") as type [space])]
+      [((("Draft Std" / "STD" / "Standard" / "Std No." / "Std" / "PTC" / (("N" / "n") "o.")
+              / (("N" / "n") "o") / "No")) as type
+          [((space "No" space))] [space])]
+      ((number)) [((part_subpart_year / edition))] [corrigendum] [amendment] [interpretation] [conformance]
+      [ashrae_copub] [ieee_crossref] [rev_inline] [draft] [revision_suffix] [trailing_month_year]
+      [ashrae_copub] [book_nickname] [corrigendum] [edition] [parenthetical] [book_nickname] [redline]
+      [title_portion] [approved_draft_suffix] / no_prefix_ieee / publisherless_ieee
+      / ieee_iso_draft_designation
   }
 
   entry identifier: identifier

@@ -20,6 +20,7 @@
 | easc | 0.1.0 | 4 | 3 | 4 | 0 | true |
 | ecma | 0.1.0 | 4 | 3 | 6 | 0 | true |
 | etsi | 0.1.0 | 3 | 2 | 10 | 0 | true |
+| eu | 0.1.0 | 17 | 15 | 11 | 0 | true |
 | evs | 0.3.0 | 25 | 14 | 8 | 0 | true |
 | gb | 0.1.0 | 3 | 2 | 4 | 0 | true |
 | gost | 0.1.0 | 3 | 2 | 6 | 0 | true |
@@ -54,4 +55,4 @@
 | w3c | 0.1.0 | 3 | 2 | 2 | 0 | true |
 | xsf | 0.1.0 | 3 | 2 | 1 | 0 | true |
 
-flavors: 52; corpus cases: 463; with render: 1; gates: run scripts/cross-runtime-check.sh
+flavors: 53; corpus cases: 478; with render: 1; gates: run scripts/cross-runtime-check.sh

@@ -1,0 +1,64 @@
+# EU legal acts (Regulation / Directive / Decision), four input forms:
+#   canonical  EU Regulation 1227/2011, EU Directive 2016/680
+#   long (OJ)  Regulation (EU) No 1227/2011, Directive 2010/75/EU
+#   CELEX      CELEX 32011R1227, CELEX:32011R1227, 32011R1227
+#   ELI        http://data.europa.eu/eli/reg/2011/1227/oj
+# The canonical and long forms capture the two numbers as `first` and
+# `second`: which one is the year is not derivable from the grammar
+# (`Regulation (EC) No 2003/2003`), so the Ruby builder decides; an
+# optional `No` (also in the canonical form, where the renderer prints it
+# only to tell two readings apart) marks <number>/<year>. CELEX and ELI fix
+# the order, so they capture `year` and `number` directly. The bracketed
+# and the suffixed family are separate captures, so the builder can reject
+# a conflict (`Regulation (EU) No 1227/2011/EC`).
+
+grammar PubidEu version "0.1.0" edition 2 {
+  digit = %x30-39
+  type_word = ("Regulation" / "Directive" / "Decision") as type_word
+  family = ("Euratom" / "CFSP" / "EEC" / "EC" / "EU") as family
+  family_suffix = ("Euratom" / "CFSP" / "EEC" / "EC" / "EU") as family_suffix
+  first = (1*digit) as first
+  second = (1*digit) as second
+  canonical = ("EU") as prefix " " type_word [(" No") as no] " " first "/" second
+  long = type_word [" (" family ")"] [(" No") as no] " " first "/" second ["/" family_suffix]
+  celex_letter = ("R" / "L" / "D") as celex_letter
+  celex = ["CELEX" (" " / ": " / ":")] "3" (4digit) as year celex_letter (1*digit) as number
+  eli_type = ("reg" / "dir" / "dec") as eli_type
+  eli = "http" ["s"] "://data.europa.eu/eli/" eli_type "/" (4digit) as year "/" (1*digit) as number ["/oj"]
+  identifier = canonical / long / celex / eli
+  entry identifier: identifier
+
+  bindings identifier {
+    prefix -> prefix (string)
+    type_word -> type_word (string)
+    family -> family (string)
+    family_suffix -> family_suffix (string)
+    no -> no (string)
+    first -> first (string)
+    second -> second (string)
+    celex_letter -> celex_letter (string)
+    eli_type -> eli_type (string)
+    year -> year (string)
+    number -> number (string)
+  }
+
+  test {
+    accept "EU Regulation 1227/2011"
+    accept "EU Directive 2016/680"
+    accept "Regulation (EU) No 1227/2011"
+    accept "Directive 2010/75/EU"
+    accept "CELEX 32011R1227"
+    accept "CELEX: 32011R1227"
+    accept "EU Regulation No 2015/2014"
+    accept "32016L0680"
+    accept "http://data.europa.eu/eli/reg/2011/1227/oj"
+    reject "nonsense"
+    reject "EU Regulation 1227"
+    example "EU Regulation 1227/2011" { prefix: "EU", type_word: "Regulation", first: "1227", second: "2011" }
+    example "Regulation (EU) No 1227/2011" { type_word: "Regulation", family: "EU", no: " No", first: "1227", second: "2011" }
+    example "Directive 2010/75/EU" { type_word: "Directive", first: "2010", second: "75", family_suffix: "EU" }
+    example "EU Regulation No 2015/2014" { prefix: "EU", type_word: "Regulation", no: " No", first: "2015", second: "2014" }
+    example "CELEX 32016R0679" { year: "2016", celex_letter: "R", number: "0679" }
+    example "http://data.europa.eu/eli/dir/2016/680/oj" { eli_type: "dir", year: "2016", number: "680" }
+  }
+}
